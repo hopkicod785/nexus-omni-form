@@ -12,11 +12,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Form validation
     form.addEventListener('submit', function(e) {
+        console.log('Form submit event triggered');
         e.preventDefault();
         
+        console.log('Starting form validation...');
         if (validateForm()) {
+            console.log('Form validation passed, showing summary and submitting...');
             showSummary();
             submitForm();
+        } else {
+            console.log('Form validation failed');
         }
     });
 
@@ -51,6 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function validateForm() {
+    console.log('validateForm() called');
     let isValid = true;
     const form = document.getElementById('nexusForm');
     
@@ -59,8 +65,10 @@ function validateForm() {
     
     // Validate required fields
     const requiredFields = form.querySelectorAll('[required]');
+    console.log('Found required fields:', requiredFields.length);
     requiredFields.forEach(field => {
         if (!field.value.trim()) {
+            console.log('Required field missing:', field.name || field.id);
             showFieldError(field, 'This field is required');
             isValid = false;
         }
@@ -68,12 +76,14 @@ function validateForm() {
     
     // Validate dates
     if (!validateDates()) {
+        console.log('Date validation failed');
         isValid = false;
     }
     
     // Validate acknowledgment
     const acknowledgment = document.getElementById('acknowledgment');
     if (!acknowledgment.checked) {
+        console.log('Acknowledgment not checked');
         showFieldError(acknowledgment, 'You must acknowledge the terms');
         isValid = false;
     }
@@ -83,10 +93,12 @@ function validateForm() {
     const hasEquipment = Array.from(equipmentInputs).some(input => parseInt(input.value) > 0);
     
     if (!hasEquipment) {
+        console.log('No equipment items selected');
         showGeneralError('Please specify at least one equipment item');
         isValid = false;
     }
     
+    console.log('Form validation result:', isValid);
     return isValid;
 }
 
@@ -273,6 +285,7 @@ function showSummary() {
 }
 
 async function submitForm() {
+    console.log('submitForm() called');
     const form = document.getElementById('nexusForm');
     const formData = new FormData(form);
     
@@ -285,12 +298,16 @@ async function submitForm() {
     // Add acknowledgment as boolean
     submissionData.acknowledgment = formData.get('acknowledgment') === 'on';
     
+    console.log('Submission data:', submissionData);
+    
     try {
         // Show loading state
         const submitButton = document.querySelector('button[type="submit"]');
         const originalText = submitButton.innerHTML;
         submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
         submitButton.disabled = true;
+        
+        console.log('Sending request to /api/submit');
         
         // Submit to backend
         const response = await fetch('/api/submit', {
@@ -301,11 +318,15 @@ async function submitForm() {
             body: JSON.stringify(submissionData)
         });
         
+        console.log('Response received:', response.status);
         const result = await response.json();
+        console.log('Response data:', result);
         
         if (result.success) {
+            console.log('Submission successful');
             showSubmissionSuccess(result.submissionId);
         } else {
+            console.log('Submission failed:', result.error);
             showSubmissionError(result.error);
         }
         
