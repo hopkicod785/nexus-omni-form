@@ -145,9 +145,9 @@ function validateDates() {
         const install = new Date(installDate.value);
         const needed = new Date(neededByDate.value);
         
-        if (install > needed) {
-            showFieldError(installDate, 'Install date cannot be after needed by date');
-            showFieldError(neededByDate, 'Needed by date cannot be before install date');
+        if (needed >= install) {
+            showFieldError(neededByDate, 'Needed by date must be before the install date');
+            showFieldError(installDate, 'Install date must be after the needed by date');
             return false;
         }
     }
