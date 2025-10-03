@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Omni Installation Authorization Form</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="form-header">
+            <div class="logo-section">
+                <i class="fas fa-network-wired"></i>
+                <h1>Nexus Omni Installation Authorization</h1>
+            </div>
+            <p class="form-description">Complete this form to request authorization for Nexus Omni installation services. This form will be submitted to the authorization team for review and approval.</p>
+        </header>
+
+        <form id="nexusForm" class="authorization-form">
+            <!-- Basic Information Section -->
+            <section class="form-section">
+                <h2><i class="fas fa-building"></i> Basic Information</h2>
+                
+                <div class="form-group">
+                    <label for="distributorName">Distributor Name *</label>
+                    <input type="text" id="distributorName" name="distributorName" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="installDate">Install Date *</label>
+                        <input type="date" id="installDate" name="installDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="neededByDate">Equipment Needed By Date *</label>
+                        <input type="date" id="neededByDate" name="neededByDate" required>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Equipment Section -->
+            <section class="form-section">
+                <h2><i class="fas fa-microchip"></i> Equipment Requirements</h2>
+                
+                <div class="equipment-grid">
+                    <div class="equipment-item">
+                        <label for="nexusQuantity">Nexus</label>
+                        <input type="number" id="nexusQuantity" name="nexusQuantity" min="0" value="0">
+                    </div>
+                    
+                    <div class="equipment-item">
+                        <label for="sensorPowerUnitQuantity">Sensor Power Unit</label>
+                        <input type="number" id="sensorPowerUnitQuantity" name="sensorPowerUnitQuantity" min="0" value="0">
+                    </div>
+                    
+                    <div class="equipment-item">
+                        <label for="type1SensorQuantity">Type 1 Sensor</label>
+                        <input type="number" id="type1SensorQuantity" name="type1SensorQuantity" min="0" value="0">
+                    </div>
+                    
+                    <div class="equipment-item">
+                        <label for="type2SensorQuantity">Type 2 Sensor</label>
+                        <input type="number" id="type2SensorQuantity" name="type2SensorQuantity" min="0" value="0">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Accessories Section -->
+            <section class="form-section">
+                <h2><i class="fas fa-tools"></i> Accessories</h2>
+                
+                <div class="accessories-grid">
+                    <div class="accessory-item">
+                        <label for="shelfMountKitQuantity">Shelf Mount Kit</label>
+                        <input type="number" id="shelfMountKitQuantity" name="shelfMountKitQuantity" min="0" value="0">
+                    </div>
+                    
+                    <div class="accessory-item">
+                        <label for="rackMountKitQuantity">19" Rack Mount Kit</label>
+                        <input type="number" id="rackMountKitQuantity" name="rackMountKitQuantity" min="0" value="0">
+                    </div>
+                    
+                    <div class="accessory-item">
+                        <label for="wifiRepeaterQuantity">WiFi Repeater</label>
+                        <input type="number" id="wifiRepeaterQuantity" name="wifiRepeaterQuantity" min="0" value="0">
+                    </div>
+                    
+                    <div class="accessory-item">
+                        <label for="c1HarnessQuantity">C1 Harness</label>
+                        <input type="number" id="c1HarnessQuantity" name="c1HarnessQuantity" min="0" value="0">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact Information Section -->
+            <section class="form-section">
+                <h2><i class="fas fa-user-tie"></i> Contact Information</h2>
+                
+                <div class="form-group">
+                    <label for="rsm">Regional Sales Manager (RSM) *</label>
+                    <input type="text" id="rsm" name="rsm" required>
+                </div>
+            </section>
+
+            <!-- Acknowledgment Section -->
+            <section class="form-section">
+                <h2><i class="fas fa-check-circle"></i> Acknowledgment</h2>
+                
+                <div class="acknowledgment-box">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="acknowledgment" name="acknowledgment" required>
+                        <label for="acknowledgment">
+                            I authorize this Nexus Omni installation request and have reviewed the equipment requirements, 
+                            installation specifications, and invoicing details. All information provided is accurate and complete.
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Invoice Section -->
+            <section class="form-section">
+                <h2><i class="fas fa-file-invoice"></i> Invoice Information</h2>
+                
+                <div class="form-group">
+                    <label for="invoiceNumber">Invoice Number</label>
+                    <input type="text" id="invoiceNumber" name="invoiceNumber" placeholder="Enter invoice number if available">
+                </div>
+                
+                <div class="form-group">
+                    <label for="additionalNotes">Additional Notes</label>
+                    <textarea id="additionalNotes" name="additionalNotes" rows="4" placeholder="Any additional information or special requirements..."></textarea>
+                </div>
+            </section>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                    <i class="fas fa-undo"></i> Reset Form
+                </button>
+                <button type="button" class="btn btn-primary" onclick="printForm()">
+                    <i class="fas fa-print"></i> Print Form
+                </button>
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-envelope"></i> Submit to Authorization Team
+                </button>
+            </div>
+        </form>
+
+        <!-- Summary Section (Hidden by default) -->
+        <div id="formSummary" class="form-summary" style="display: none;">
+            <h2><i class="fas fa-clipboard-list"></i> Form Summary</h2>
+            <div id="summaryContent"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
