@@ -1,8 +1,14 @@
 // Form validation and interactivity
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing form...');
+    
     const form = document.getElementById('nexusForm');
     const summarySection = document.getElementById('formSummary');
     const summaryContent = document.getElementById('summaryContent');
+    
+    console.log('Form element found:', form);
+    console.log('Summary section found:', summarySection);
+    console.log('Summary content found:', summaryContent);
 
     // Configuration - Update this email address as needed
     const CONFIG = {
@@ -11,48 +17,65 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Form validation
-    form.addEventListener('submit', function(e) {
-        console.log('Form submit event triggered');
-        e.preventDefault();
-        
-        console.log('Starting form validation...');
-        if (validateForm()) {
-            console.log('Form validation passed, showing summary and submitting...');
-            showSummary();
-            submitForm();
-        } else {
-            console.log('Form validation failed');
-        }
-    });
+    if (form) {
+        console.log('Adding submit event listener to form...');
+        form.addEventListener('submit', function(e) {
+            console.log('Form submit event triggered');
+            e.preventDefault();
+            
+            console.log('Starting form validation...');
+            if (validateForm()) {
+                console.log('Form validation passed, showing summary and submitting...');
+                showSummary();
+                submitForm();
+            } else {
+                console.log('Form validation failed');
+            }
+        });
+        console.log('Submit event listener added successfully');
+    } else {
+        console.error('Form element not found! Cannot add event listener.');
+    }
 
     // Real-time validation
-    const requiredFields = form.querySelectorAll('[required]');
-    requiredFields.forEach(field => {
-        field.addEventListener('blur', validateField);
-        field.addEventListener('input', clearFieldError);
-    });
+    if (form) {
+        const requiredFields = form.querySelectorAll('[required]');
+        console.log('Found required fields for validation:', requiredFields.length);
+        requiredFields.forEach(field => {
+            field.addEventListener('blur', validateField);
+            field.addEventListener('input', clearFieldError);
+        });
+    }
 
     // Date validation
     const installDate = document.getElementById('installDate');
     const neededByDate = document.getElementById('neededByDate');
     
-    installDate.addEventListener('change', validateDates);
-    neededByDate.addEventListener('change', validateDates);
+    if (installDate && neededByDate) {
+        installDate.addEventListener('change', validateDates);
+        neededByDate.addEventListener('change', validateDates);
+        console.log('Date validation listeners added');
+    }
 
     // Quantity input validation
-    const quantityInputs = form.querySelectorAll('input[type="number"]');
-    quantityInputs.forEach(input => {
-        input.addEventListener('input', function() {
-            if (this.value < 0) {
-                this.value = 0;
-            }
+    if (form) {
+        const quantityInputs = form.querySelectorAll('input[type="number"]');
+        console.log('Found quantity inputs:', quantityInputs.length);
+        quantityInputs.forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.value < 0) {
+                    this.value = 0;
+                }
+            });
         });
-    });
 
-    // Auto-calculate totals
-    quantityInputs.forEach(input => {
-        input.addEventListener('input', updateTotals);
-    });
+        // Auto-calculate totals
+        quantityInputs.forEach(input => {
+            input.addEventListener('input', updateTotals);
+        });
+    }
+    
+    console.log('Form initialization complete');
 });
 
 function validateForm() {
