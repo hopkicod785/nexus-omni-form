@@ -375,9 +375,9 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${submission.id}</td>
-                    <td>${submission.distributorName}</td>
+                    <td>${submission.distributor_name || submission.distributorName}</td>
                     <td>${submission.rsm}</td>
-                    <td>${submission.installDate}</td>
+                    <td>${submission.install_date || submission.installDate}</td>
                     <td><span class="status-badge status-${submission.status}">${submission.status}</span></td>
                     <td>${new Date(submission.timestamp).toLocaleDateString()}</td>
                     <td>
@@ -448,7 +448,7 @@
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Distributor:</span>
-                    <span class="detail-value">${submission.distributorName}</span>
+                    <span class="detail-value">${submission.distributor_name || submission.distributorName}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">RSM:</span>
@@ -456,40 +456,40 @@
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Install Date:</span>
-                    <span class="detail-value">${submission.installDate}</span>
+                    <span class="detail-value">${submission.install_date || submission.installDate}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Needed By:</span>
-                    <span class="detail-value">${submission.neededByDate}</span>
+                    <span class="detail-value">${submission.needed_by_date || submission.neededByDate}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Equipment:</span>
                     <span class="detail-value">
-                        Nexus: ${submission.nexusQuantity || 0}<br>
-                        Sensor Power Unit: ${submission.sensorPowerUnitQuantity || 0}<br>
-                        Type 1 Sensor: ${submission.type1SensorQuantity || 0}<br>
-                        Type 2 Sensor: ${submission.type2SensorQuantity || 0}
+                        Nexus: ${submission.nexus_quantity || submission.nexusQuantity || 0}<br>
+                        Sensor Power Unit: ${submission.sensor_power_unit_quantity || submission.sensorPowerUnitQuantity || 0}<br>
+                        Type 1 Sensor: ${submission.type1_sensor_quantity || submission.type1SensorQuantity || 0}<br>
+                        Type 2 Sensor: ${submission.type2_sensor_quantity || submission.type2SensorQuantity || 0}
                     </span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Accessories:</span>
                     <span class="detail-value">
-                        Shelf Mount Kit: ${submission.shelfMountKitQuantity || 0}<br>
-                        19" Rack Mount Kit: ${submission.rackMountKitQuantity || 0}<br>
-                        WiFi Repeater: ${submission.wifiRepeaterQuantity || 0}<br>
-                        C1 Harness: ${submission.c1HarnessQuantity || 0}
+                        Shelf Mount Kit: ${submission.shelf_mount_kit_quantity || submission.shelfMountKitQuantity || 0}<br>
+                        19" Rack Mount Kit: ${submission.rack_mount_kit_quantity || submission.rackMountKitQuantity || 0}<br>
+                        WiFi Repeater: ${submission.wifi_repeater_quantity || submission.wifiRepeaterQuantity || 0}<br>
+                        C1 Harness: ${submission.c1_harness_quantity || submission.c1HarnessQuantity || 0}
                     </span>
                 </div>
-                ${submission.invoiceNumber ? `
+                ${submission.invoice_number || submission.invoiceNumber ? `
                 <div class="detail-row">
                     <span class="detail-label">Invoice Number:</span>
-                    <span class="detail-value">${submission.invoiceNumber}</span>
+                    <span class="detail-value">${submission.invoice_number || submission.invoiceNumber}</span>
                 </div>
                 ` : ''}
-                ${submission.additionalNotes ? `
+                ${submission.additional_notes || submission.additionalNotes ? `
                 <div class="detail-row">
                     <span class="detail-label">Additional Notes:</span>
-                    <span class="detail-value">${submission.additionalNotes}</span>
+                    <span class="detail-value">${submission.additional_notes || submission.additionalNotes}</span>
                 </div>
                 ` : ''}
                 <div class="detail-row">
