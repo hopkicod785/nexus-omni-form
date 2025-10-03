@@ -108,20 +108,6 @@ window.testScript = function() {
     alert('Script is working!');
 };
 
-// Handle submit function for onclick
-window.handleSubmit = function(event) {
-    console.log('handleSubmit called via onclick');
-    event.preventDefault();
-    
-    console.log('Starting form validation from onclick...');
-    if (validateForm()) {
-        console.log('Form validation passed from onclick, showing summary and submitting...');
-        showSummary();
-        submitForm();
-    } else {
-        console.log('Form validation failed from onclick');
-    }
-};
 
 function validateForm() {
     console.log('validateForm() called');
@@ -355,8 +341,20 @@ function showSummary() {
     summarySection.scrollIntoView({ behavior: 'smooth' });
 }
 
+// Prevent duplicate submissions
+let isSubmitting = false;
+
 async function submitForm() {
     console.log('submitForm() called');
+    
+    // Prevent duplicate submissions
+    if (isSubmitting) {
+        console.log('Already submitting, ignoring duplicate request');
+        return;
+    }
+    
+    isSubmitting = true;
+    
     const form = document.getElementById('nexusForm');
     const formData = new FormData(form);
     
@@ -405,10 +403,11 @@ async function submitForm() {
         console.error('Submission error:', error);
         showSubmissionError('Failed to submit form. Please try again.');
     } finally {
-        // Reset button
+        // Reset button and submission flag
         const submitButton = document.querySelector('button[type="submit"]');
         submitButton.innerHTML = originalText;
         submitButton.disabled = false;
+        isSubmitting = false;
     }
 }
 
