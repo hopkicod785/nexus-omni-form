@@ -423,80 +423,99 @@ Regional Sales Manager`;
 }
 
 function showSubmissionSuccess(submissionId) {
-    const successDiv = document.createElement('div');
-    successDiv.className = 'submission-success';
-    successDiv.innerHTML = `
-        <div style="
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid #10b981;
-            color: #10b981;
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            text-align: center;
-        ">
-            <i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 15px; display: block;"></i>
-            <h3 style="margin-bottom: 15px; color: #10b981;">Authorization Request Submitted Successfully!</h3>
-            <p style="margin-bottom: 20px; color: #cbd5e1;">
-                Your Nexus Omni installation authorization request has been submitted and is now pending review.
-            </p>
-            
-            <div style="
-                background: rgba(0, 0, 0, 0.2);
-                border-radius: 8px;
-                padding: 15px;
-                margin-top: 20px;
-                text-align: left;
-                font-size: 0.9rem;
-                color: #94a3b8;
-            ">
-                <strong>Submission ID:</strong> ${submissionId}<br>
-                <strong>Status:</strong> Pending Review<br>
-                <strong>Submitted:</strong> ${new Date().toLocaleString()}
-            </div>
-            
-            <div style="margin-top: 20px;">
-                <button onclick="printForm()" style="
-                    background: #3b82f6;
-                    color: white;
-                    border: none;
-                    padding: 10px 20px;
-                    border-radius: 6px;
-                    font-weight: 500;
-                    cursor: pointer;
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 6px;
-                    font-family: inherit;
-                    margin-right: 10px;
-                ">
-                    <i class="fas fa-print"></i> Print Copy
-                </button>
-                
-                <button onclick="resetForm()" style="
-                    background: #6b7280;
-                    color: white;
-                    border: none;
-                    padding: 10px 20px;
-                    border-radius: 6px;
-                    font-weight: 500;
-                    cursor: pointer;
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 6px;
-                    font-family: inherit;
-                ">
-                    <i class="fas fa-plus"></i> New Request
-                </button>
-            </div>
-        </div>
+    // Clear the form
+    document.getElementById('nexusForm').reset();
+    
+    // Hide any existing summary
+    document.getElementById('formSummary').style.display = 'none';
+    
+    // Clear any existing errors
+    clearAllErrors();
+    
+    // Show success popup
+    showSuccessPopup(submissionId);
+}
+
+function showSuccessPopup(submissionId) {
+    // Create popup overlay
+    const popupOverlay = document.createElement('div');
+    popupOverlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     `;
     
-    const form = document.getElementById('nexusForm');
-    form.insertBefore(successDiv, form.firstChild);
+    // Create popup content
+    const popupContent = document.createElement('div');
+    popupContent.style.cssText = `
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 30px;
+        max-width: 500px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    `;
     
-    // Scroll to success message
-    successDiv.scrollIntoView({ behavior: 'smooth' });
+    popupContent.innerHTML = `
+        <div style="color: #10b981; font-size: 3rem; margin-bottom: 20px;">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h2 style="color: #10b981; margin-bottom: 15px; font-size: 1.5rem;">Success!</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5;">
+            Your Nexus Omni installation authorization request has been submitted successfully and is now pending review.
+        </p>
+        <div style="
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        ">
+            <strong>Submission ID:</strong> ${submissionId}<br>
+            <strong>Status:</strong> Pending Review<br>
+            <strong>Submitted:</strong> ${new Date().toLocaleString()}
+        </div>
+        <button onclick="closeSuccessPopup()" style="
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+        ">
+            OK
+        </button>
+    `;
+    
+    popupOverlay.appendChild(popupContent);
+    document.body.appendChild(popupOverlay);
+    
+    // Auto-close after 10 seconds
+    setTimeout(() => {
+        if (document.body.contains(popupOverlay)) {
+            closeSuccessPopup();
+        }
+    }, 10000);
+}
+
+function closeSuccessPopup() {
+    const popup = document.querySelector('div[style*="position: fixed"]');
+    if (popup) {
+        popup.remove();
+    }
 }
 
 function showSubmissionError(errorMessage) {
@@ -620,6 +639,9 @@ function resetForm() {
         if (submissionOptions) {
             submissionOptions.remove();
         }
+        
+        // Close any open popups
+        closeSuccessPopup();
     }
 }
 
