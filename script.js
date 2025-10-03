@@ -1,4 +1,6 @@
 // Form validation and interactivity
+console.log('Script.js loaded successfully!');
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing form...');
     
@@ -99,6 +101,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log('Form initialization complete');
 });
+
+// Test function to verify script is working
+window.testScript = function() {
+    console.log('Test function called - script is working!');
+    alert('Script is working!');
+};
 
 function validateForm() {
     console.log('validateForm() called');
