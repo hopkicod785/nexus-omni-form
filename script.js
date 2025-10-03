@@ -33,6 +33,28 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         console.log('Submit event listener added successfully');
+        
+        // Also add click listener to submit button as backup
+        const submitButton = document.querySelector('button[type="submit"]');
+        if (submitButton) {
+            console.log('Adding click event listener to submit button...');
+            submitButton.addEventListener('click', function(e) {
+                console.log('Submit button clicked!');
+                e.preventDefault();
+                
+                console.log('Starting form validation from button click...');
+                if (validateForm()) {
+                    console.log('Form validation passed from button click, showing summary and submitting...');
+                    showSummary();
+                    submitForm();
+                } else {
+                    console.log('Form validation failed from button click');
+                }
+            });
+            console.log('Submit button click listener added successfully');
+        } else {
+            console.error('Submit button not found!');
+        }
     } else {
         console.error('Form element not found! Cannot add event listener.');
     }
