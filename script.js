@@ -108,6 +108,21 @@ window.testScript = function() {
     alert('Script is working!');
 };
 
+// Handle submit function for onclick
+window.handleSubmit = function(event) {
+    console.log('handleSubmit called via onclick');
+    event.preventDefault();
+    
+    console.log('Starting form validation from onclick...');
+    if (validateForm()) {
+        console.log('Form validation passed from onclick, showing summary and submitting...');
+        showSummary();
+        submitForm();
+    } else {
+        console.log('Form validation failed from onclick');
+    }
+};
+
 function validateForm() {
     console.log('validateForm() called');
     let isValid = true;
