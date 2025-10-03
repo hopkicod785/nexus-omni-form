@@ -345,6 +345,9 @@ function showSummary() {
         summaryHTML += '</div>';
     }
     
+    const summaryContent = document.getElementById('summaryContent');
+    const summarySection = document.getElementById('formSummary');
+    
     summaryContent.innerHTML = summaryHTML;
     summarySection.style.display = 'block';
     
