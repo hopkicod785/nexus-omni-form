@@ -91,6 +91,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     this.value = 0;
                 }
             });
+            
+            // Prevent mouse wheel from changing number input values
+            input.addEventListener('wheel', function(e) {
+                e.preventDefault();
+            });
         });
 
         // Auto-calculate totals
