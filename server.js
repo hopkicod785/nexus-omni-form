@@ -10,43 +10,61 @@ const PORT = process.env.PORT || 3000;
 
 // Initialize database
 let database;
-try {
-    database = new Database();
-} catch (error) {
-    console.error('Database initialization error:', error);
-    // Fallback to JSON file storage if database fails
-    const fs = require('fs');
-    const path = require('path');
-    const DATA_FILE = path.join(__dirname, 'submissions.json');
-    
-    if (!fs.existsSync(DATA_FILE)) {
-        fs.writeFileSync(DATA_FILE, JSON.stringify([], null, 2));
-    }
-    
-    // Simple fallback functions
-    database = {
-        createSubmission: async (submission) => {
-            const submissions = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
-            submissions.push(submission);
-            fs.writeFileSync(DATA_FILE, JSON.stringify(submissions, null, 2));
-        },
-        getAllSubmissions: async () => {
-            return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
-        },
-        getSubmissionById: async (id) => {
-            const submissions = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
-            return submissions.find(s => s.id === id);
-        },
-        updateSubmissionStatus: async (id, status) => {
-            const submissions = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
-            const index = submissions.findIndex(s => s.id === id);
-            if (index !== -1) {
-                submissions[index].status = status;
-                submissions[index].statusUpdated = new Date().toISOString();
-                fs.writeFileSync(DATA_FILE, JSON.stringify(submissions, null, 2));
-            }
+async function initializeDatabase() {
+    try {
+        database = new Database();
+        // Wait for database to be fully initialized
+        await new Promise((resolve, reject) => {
+            const checkInit = () => {
+                if (database.initialized) {
+                    resolve();
+                } else if (database.db && !database.initialized) {
+                    // If db exists but not initialized, wait a bit more
+                    setTimeout(checkInit, 100);
+                } else {
+                    setTimeout(checkInit, 100);
+                }
+            };
+            checkInit();
+        });
+        console.log('Database initialized successfully');
+    } catch (error) {
+        console.error('Database initialization error:', error);
+        // Fallback to JSON file storage if database fails
+        const fs = require('fs');
+        const path = require('path');
+        const DATA_FILE = path.join(__dirname, 'submissions.json');
+        
+        if (!fs.existsSync(DATA_FILE)) {
+            fs.writeFileSync(DATA_FILE, JSON.stringify([], null, 2));
         }
-    };
+        
+        // Simple fallback functions
+        database = {
+            createSubmission: async (submission) => {
+                const submissions = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+                submissions.push(submission);
+                fs.writeFileSync(DATA_FILE, JSON.stringify(submissions, null, 2));
+            },
+            getAllSubmissions: async () => {
+                return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+            },
+            getSubmissionById: async (id) => {
+                const submissions = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+                return submissions.find(s => s.id === id);
+            },
+            updateSubmissionStatus: async (id, status) => {
+                const submissions = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+                const index = submissions.findIndex(s => s.id === id);
+                if (index !== -1) {
+                    submissions[index].status = status;
+                    submissions[index].statusUpdated = new Date().toISOString();
+                    fs.writeFileSync(DATA_FILE, JSON.stringify(submissions, null, 2));
+                }
+            }
+        };
+        console.log('Using JSON file fallback for data storage');
+    }
 }
 
 // Middleware
@@ -208,8 +226,14 @@ app.get('/api/debug', async (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-    console.log(`Admin panel available at http://localhost:${PORT}/admin`);
-    console.log(`Health check available at http://localhost:${PORT}/health`);
-});
+async function startServer() {
+    await initializeDatabase();
+    
+    app.listen(PORT, () => {
+        console.log(`Server running on http://localhost:${PORT}`);
+        console.log(`Admin panel available at http://localhost:${PORT}/admin`);
+        console.log(`Health check available at http://localhost:${PORT}/health`);
+    });
+}
+
+startServer().catch(console.error);

@@ -6,16 +6,24 @@ class Database {
     constructor() {
         this.db = null;
         this.isPostgres = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+        this.initialized = false;
         this.init();
     }
 
     async init() {
-        if (this.isPostgres) {
-            await this.initPostgres();
-        } else {
-            await this.initSQLite();
+        try {
+            if (this.isPostgres) {
+                await this.initPostgres();
+            } else {
+                await this.initSQLite();
+            }
+            await this.createTables();
+            this.initialized = true;
+            console.log('Database initialization completed');
+        } catch (error) {
+            console.error('Database initialization failed:', error);
+            throw error;
         }
-        await this.createTables();
     }
 
     async initPostgres() {
@@ -34,12 +42,13 @@ class Database {
     async initSQLite() {
         return new Promise((resolve, reject) => {
             const dbPath = path.join(__dirname, 'submissions.db');
+            console.log('Attempting to connect to SQLite database at:', dbPath);
             this.db = new sqlite3.Database(dbPath, (err) => {
                 if (err) {
                     console.error('SQLite connection error:', err);
                     reject(err);
                 } else {
-                    console.log('Connected to SQLite database');
+                    console.log('Connected to SQLite database at:', dbPath);
                     resolve();
                 }
             });
@@ -122,6 +131,7 @@ class Database {
     }
 
     async createSubmission(submissionData) {
+        console.log('Creating submission:', submissionData.id);
         const {
             id, timestamp, status, distributorName, installDate, neededByDate,
             nexusQuantity, sensorPowerUnitQuantity, type1SensorQuantity, type2SensorQuantity,
@@ -145,7 +155,9 @@ class Database {
             rsm, acknowledgment, invoiceNumber, additionalNotes
         ];
 
-        return await this.run(sql, params);
+        const result = await this.run(sql, params);
+        console.log('Submission created successfully:', result);
+        return result;
     }
 
     async getAllSubmissions() {
