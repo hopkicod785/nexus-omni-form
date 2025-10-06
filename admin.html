@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         .admin-container {
             max-width: 1200px;
@@ -155,6 +156,11 @@
             color: white;
         }
         
+        .btn-print {
+            background: #8b5cf6;
+            color: white;
+        }
+        
         .loading {
             text-align: center;
             padding: 40px;
@@ -247,6 +253,33 @@
         <div class="admin-header">
             <h1><i class="fas fa-cog"></i> Nexus Omni Admin Panel</h1>
             <p>Manage installation authorization requests</p>
+            <div style="margin-top: 20px;">
+                <button onclick="printAllSubmissions()" style="
+                    background: #8b5cf6;
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-family: inherit;
+                    font-weight: 500;
+                    margin-right: 10px;
+                ">
+                    <i class="fas fa-print"></i> Print All Submissions
+                </button>
+                <button onclick="printApprovedSubmissions()" style="
+                    background: #10b981;
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-family: inherit;
+                    font-weight: 500;
+                ">
+                    <i class="fas fa-check-circle"></i> Print Approved Only
+                </button>
+            </div>
         </div>
         
         <div class="stats-grid">
@@ -382,14 +415,17 @@
                     <td>${new Date(submission.timestamp).toLocaleDateString()}</td>
                     <td>
                         <div class="action-buttons">
-                            <button class="btn-small btn-view" onclick="viewSubmission('${submission.id}')">
+                            <button class="btn-small btn-view" onclick="viewSubmission('${submission.id}')" title="View Details">
                                 <i class="fas fa-eye"></i>
                             </button>
+                            <button class="btn-small btn-print" onclick="printSubmission('${submission.id}')" title="Print PDF">
+                                <i class="fas fa-print"></i>
+                            </button>
                             ${submission.status === 'pending' ? `
-                                <button class="btn-small btn-approve" onclick="updateStatus('${submission.id}', 'approved')">
+                                <button class="btn-small btn-approve" onclick="updateStatus('${submission.id}', 'approved')" title="Approve">
                                     <i class="fas fa-check"></i>
                                 </button>
-                                <button class="btn-small btn-reject" onclick="updateStatus('${submission.id}', 'rejected')">
+                                <button class="btn-small btn-reject" onclick="updateStatus('${submission.id}', 'rejected')" title="Reject">
                                     <i class="fas fa-times"></i>
                                 </button>
                             ` : ''}
@@ -534,6 +570,230 @@
             } catch (error) {
                 console.error('Error updating status:', error);
                 alert('Failed to update status. Please try again.');
+            }
+        }
+        
+        function printSubmission(id) {
+            const submission = submissions.find(s => s.id === id);
+            if (!submission) return;
+            
+            generatePDF(submission);
+        }
+        
+        function generatePDF(submission) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Set up fonts and colors
+            const primaryColor = '#3b82f6';
+            const secondaryColor = '#6b7280';
+            const accentColor = '#10b981';
+            
+            // Header
+            doc.setFillColor(primaryColor);
+            doc.rect(0, 0, 210, 30, 'F');
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(20);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Nexus Omni Installation Authorization', 20, 20);
+            
+            // Reset text color
+            doc.setTextColor(0, 0, 0);
+            
+            // Submission ID and Status
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`Submission ID: ${submission.id}`, 20, 45);
+            
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Status: ${submission.status.toUpperCase()}`, 120, 45);
+            doc.text(`Submitted: ${new Date(submission.timestamp).toLocaleDateString()}`, 20, 55);
+            
+            // Basic Information Section
+            let yPos = 75;
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(primaryColor);
+            doc.text('Basic Information', 20, yPos);
+            
+            yPos += 10;
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(0, 0, 0);
+            
+            const basicInfo = [
+                ['Distributor:', submission.distributor_name || submission.distributorName],
+                ['RSM:', submission.rsm],
+                ['Install Date:', submission.install_date || submission.installDate],
+                ['Equipment Needed By:', submission.needed_by_date || submission.neededByDate]
+            ];
+            
+            basicInfo.forEach(([label, value]) => {
+                doc.setFont('helvetica', 'bold');
+                doc.text(label, 20, yPos);
+                doc.setFont('helvetica', 'normal');
+                doc.text(value, 80, yPos);
+                yPos += 6;
+            });
+            
+            // Equipment Section
+            yPos += 10;
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(primaryColor);
+            doc.text('Equipment Requirements', 20, yPos);
+            
+            yPos += 10;
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(0, 0, 0);
+            
+            const equipment = [
+                ['Nexus:', submission.nexus_quantity || submission.nexusQuantity || 0],
+                ['Sensor Power Unit:', submission.sensor_power_unit_quantity || submission.sensorPowerUnitQuantity || 0],
+                ['Type 1 Sensor:', submission.type1_sensor_quantity || submission.type1SensorQuantity || 0],
+                ['Type 2 Sensor:', submission.type2_sensor_quantity || submission.type2SensorQuantity || 0]
+            ];
+            
+            equipment.forEach(([item, qty]) => {
+                doc.setFont('helvetica', 'bold');
+                doc.text(item, 20, yPos);
+                doc.setFont('helvetica', 'normal');
+                doc.text(qty.toString(), 80, yPos);
+                yPos += 6;
+            });
+            
+            // Accessories Section
+            yPos += 10;
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(primaryColor);
+            doc.text('Accessories', 20, yPos);
+            
+            yPos += 10;
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(0, 0, 0);
+            
+            const accessories = [
+                ['Shelf Mount Kit:', submission.shelf_mount_kit_quantity || submission.shelfMountKitQuantity || 0],
+                ['19" Rack Mount Kit:', submission.rack_mount_kit_quantity || submission.rackMountKitQuantity || 0],
+                ['WiFi Repeater:', submission.wifi_repeater_quantity || submission.wifiRepeaterQuantity || 0],
+                ['C1 Harness:', submission.c1_harness_quantity || submission.c1HarnessQuantity || 0]
+            ];
+            
+            accessories.forEach(([item, qty]) => {
+                doc.setFont('helvetica', 'bold');
+                doc.text(item, 20, yPos);
+                doc.setFont('helvetica', 'normal');
+                doc.text(qty.toString(), 80, yPos);
+                yPos += 6;
+            });
+            
+            // Additional Information
+            if (submission.invoice_number || submission.invoiceNumber) {
+                yPos += 10;
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(primaryColor);
+                doc.text('Additional Information', 20, yPos);
+                
+                yPos += 10;
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(0, 0, 0);
+                
+                doc.setFont('helvetica', 'bold');
+                doc.text('Invoice Number:', 20, yPos);
+                doc.setFont('helvetica', 'normal');
+                doc.text(submission.invoice_number || submission.invoiceNumber, 80, yPos);
+                yPos += 6;
+            }
+            
+            if (submission.additional_notes || submission.additionalNotes) {
+                doc.setFont('helvetica', 'bold');
+                doc.text('Additional Notes:', 20, yPos);
+                yPos += 6;
+                doc.setFont('helvetica', 'normal');
+                
+                // Split long notes into multiple lines
+                const notes = submission.additional_notes || submission.additionalNotes;
+                const maxWidth = 150;
+                const words = notes.split(' ');
+                let line = '';
+                
+                words.forEach(word => {
+                    const testLine = line + word + ' ';
+                    const testWidth = doc.getTextWidth(testLine);
+                    if (testWidth > maxWidth && line !== '') {
+                        doc.text(line, 20, yPos);
+                        yPos += 6;
+                        line = word + ' ';
+                    } else {
+                        line = testLine;
+                    }
+                });
+                if (line) {
+                    doc.text(line, 20, yPos);
+                    yPos += 6;
+                }
+            }
+            
+            // Acknowledgment
+            yPos += 10;
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(accentColor);
+            doc.text('Acknowledgment:', 20, yPos);
+            
+            yPos += 6;
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(0, 0, 0);
+            doc.text(submission.acknowledgment ? '✓ Authorized and confirmed' : '✗ Not authorized', 20, yPos);
+            
+            // Footer
+            const pageHeight = doc.internal.pageSize.height;
+            doc.setFontSize(8);
+            doc.setTextColor(secondaryColor);
+            doc.text(`Generated on ${new Date().toLocaleString()}`, 20, pageHeight - 20);
+            doc.text('Nexus Omni Installation Authorization System', 20, pageHeight - 15);
+            
+            // Save the PDF
+            const fileName = `nexus-omni-authorization-${submission.id}.pdf`;
+            doc.save(fileName);
+        }
+        
+        function printAllSubmissions() {
+            if (submissions.length === 0) {
+                alert('No submissions to print.');
+                return;
+            }
+            
+            if (confirm(`Print all ${submissions.length} submissions? This will generate ${submissions.length} PDF files.`)) {
+                submissions.forEach((submission, index) => {
+                    setTimeout(() => {
+                        generatePDF(submission);
+                    }, index * 1000); // Delay each PDF by 1 second to avoid browser issues
+                });
+            }
+        }
+        
+        function printApprovedSubmissions() {
+            const approvedSubmissions = submissions.filter(s => s.status === 'approved');
+            
+            if (approvedSubmissions.length === 0) {
+                alert('No approved submissions to print.');
+                return;
+            }
+            
+            if (confirm(`Print ${approvedSubmissions.length} approved submissions? This will generate ${approvedSubmissions.length} PDF files.`)) {
+                approvedSubmissions.forEach((submission, index) => {
+                    setTimeout(() => {
+                        generatePDF(submission);
+                    }, index * 1000); // Delay each PDF by 1 second to avoid browser issues
+                });
             }
         }
     </script>
