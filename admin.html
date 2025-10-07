@@ -505,6 +505,14 @@
                     <span class="detail-value">${submission.needed_by_date || submission.neededByDate}</span>
                 </div>
                 <div class="detail-row">
+                    <span class="detail-label">Shipping Address:</span>
+                    <span class="detail-value">
+                        ${submission.shipping_address || submission.shippingAddress || 'N/A'}<br>
+                        ${submission.shipping_po_box || submission.shippingPoBox ? `PO Box: ${submission.shipping_po_box || submission.shippingPoBox}<br>` : ''}
+                        ${submission.shipping_city || submission.shippingCity || 'N/A'}, ${submission.shipping_state || submission.shippingState || 'N/A'} ${submission.shipping_zip || submission.shippingZip || 'N/A'}
+                    </span>
+                </div>
+                <div class="detail-row">
                     <span class="detail-label">Equipment:</span>
                     <span class="detail-value">
                         Nexus: ${submission.nexus_quantity || submission.nexusQuantity || 0}<br>
@@ -636,7 +644,35 @@
                 ['Equipment Needed By:', submission.needed_by_date || submission.neededByDate]
             ];
             
+            const shippingInfo = [
+                ['Address:', submission.shipping_address || submission.shippingAddress || 'N/A'],
+                ['PO Box:', submission.shipping_po_box || submission.shippingPoBox || 'N/A'],
+                ['City:', submission.shipping_city || submission.shippingCity || 'N/A'],
+                ['State:', submission.shipping_state || submission.shippingState || 'N/A'],
+                ['Zip Code:', submission.shipping_zip || submission.shippingZip || 'N/A']
+            ];
+            
             basicInfo.forEach(([label, value]) => {
+                doc.setFont('helvetica', 'bold');
+                doc.text(label, 20, yPos);
+                doc.setFont('helvetica', 'normal');
+                doc.text(value, 80, yPos);
+                yPos += 6;
+            });
+            
+            // Shipping Information Section
+            yPos += 10;
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(primaryColor);
+            doc.text('Shipping Information', 20, yPos);
+            
+            yPos += 10;
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(0, 0, 0);
+            
+            shippingInfo.forEach(([label, value]) => {
                 doc.setFont('helvetica', 'bold');
                 doc.text(label, 20, yPos);
                 doc.setFont('helvetica', 'normal');

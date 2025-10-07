@@ -66,6 +66,11 @@ class Database {
                 end_user TEXT NOT NULL,
                 install_date TEXT NOT NULL,
                 needed_by_date TEXT NOT NULL,
+                shipping_address TEXT NOT NULL,
+                shipping_po_box TEXT,
+                shipping_city TEXT NOT NULL,
+                shipping_state TEXT NOT NULL,
+                shipping_zip TEXT NOT NULL,
                 nexus_quantity INTEGER DEFAULT 0,
                 sensor_power_unit_quantity INTEGER DEFAULT 0,
                 type1_sensor_quantity INTEGER DEFAULT 0,
@@ -135,6 +140,7 @@ class Database {
         console.log('Creating submission:', submissionData.id);
         const {
             id, timestamp, status, distributorName, endUser, installDate, neededByDate,
+            shippingAddress, shippingPoBox, shippingCity, shippingState, shippingZip,
             nexusQuantity, sensorPowerUnitQuantity, type1SensorQuantity, type2SensorQuantity,
             shelfMountKitQuantity, rackMountKitQuantity, wifiRepeaterQuantity, c1HarnessQuantity,
             rsm, acknowledgment, invoiceNumber, additionalNotes
@@ -143,14 +149,16 @@ class Database {
         const sql = `
             INSERT INTO submissions (
                 id, timestamp, status, distributor_name, end_user, install_date, needed_by_date,
+                shipping_address, shipping_po_box, shipping_city, shipping_state, shipping_zip,
                 nexus_quantity, sensor_power_unit_quantity, type1_sensor_quantity, type2_sensor_quantity,
                 shelf_mount_kit_quantity, rack_mount_kit_quantity, wifi_repeater_quantity, c1_harness_quantity,
                 rsm, acknowledgment, invoice_number, additional_notes
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         const params = [
             id, timestamp, status, distributorName, endUser, installDate, neededByDate,
+            shippingAddress, shippingPoBox, shippingCity, shippingState, shippingZip,
             nexusQuantity || 0, sensorPowerUnitQuantity || 0, type1SensorQuantity || 0, type2SensorQuantity || 0,
             shelfMountKitQuantity || 0, rackMountKitQuantity || 0, wifiRepeaterQuantity || 0, c1HarnessQuantity || 0,
             rsm, acknowledgment, invoiceNumber, additionalNotes

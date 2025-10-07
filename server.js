@@ -83,7 +83,7 @@ app.post('/api/submit', async (req, res) => {
         const formData = req.body;
         
         // Validate required fields
-        const requiredFields = ['distributorName', 'endUser', 'installDate', 'neededByDate', 'rsm', 'acknowledgment'];
+        const requiredFields = ['distributorName', 'endUser', 'installDate', 'neededByDate', 'shippingAddress', 'shippingCity', 'shippingState', 'shippingZip', 'rsm', 'acknowledgment'];
         const missingFields = requiredFields.filter(field => !formData[field]);
         
         if (missingFields.length > 0) {
