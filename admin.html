@@ -317,6 +317,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Distributor</th>
+                            <th>End-User</th>
                             <th>RSM</th>
                             <th>Install Date</th>
                             <th>Status</th>
@@ -409,6 +410,7 @@
                 row.innerHTML = `
                     <td>${submission.id}</td>
                     <td>${submission.distributor_name || submission.distributorName}</td>
+                    <td>${submission.end_user || submission.endUser || 'N/A'}</td>
                     <td>${submission.rsm}</td>
                     <td>${submission.install_date || submission.installDate}</td>
                     <td><span class="status-badge status-${submission.status}">${submission.status}</span></td>
@@ -485,6 +487,10 @@
                 <div class="detail-row">
                     <span class="detail-label">Distributor:</span>
                     <span class="detail-value">${submission.distributor_name || submission.distributorName}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">End-User:</span>
+                    <span class="detail-value">${submission.end_user || submission.endUser || 'N/A'}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">RSM:</span>
@@ -624,6 +630,7 @@
             
             const basicInfo = [
                 ['Distributor:', submission.distributor_name || submission.distributorName],
+                ['End-User:', submission.end_user || submission.endUser || 'N/A'],
                 ['RSM:', submission.rsm],
                 ['Install Date:', submission.install_date || submission.installDate],
                 ['Equipment Needed By:', submission.needed_by_date || submission.neededByDate]

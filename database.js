@@ -63,6 +63,7 @@ class Database {
                 status TEXT DEFAULT 'pending',
                 status_updated TEXT,
                 distributor_name TEXT NOT NULL,
+                end_user TEXT NOT NULL,
                 install_date TEXT NOT NULL,
                 needed_by_date TEXT NOT NULL,
                 nexus_quantity INTEGER DEFAULT 0,
@@ -133,7 +134,7 @@ class Database {
     async createSubmission(submissionData) {
         console.log('Creating submission:', submissionData.id);
         const {
-            id, timestamp, status, distributorName, installDate, neededByDate,
+            id, timestamp, status, distributorName, endUser, installDate, neededByDate,
             nexusQuantity, sensorPowerUnitQuantity, type1SensorQuantity, type2SensorQuantity,
             shelfMountKitQuantity, rackMountKitQuantity, wifiRepeaterQuantity, c1HarnessQuantity,
             rsm, acknowledgment, invoiceNumber, additionalNotes
@@ -141,15 +142,15 @@ class Database {
 
         const sql = `
             INSERT INTO submissions (
-                id, timestamp, status, distributor_name, install_date, needed_by_date,
+                id, timestamp, status, distributor_name, end_user, install_date, needed_by_date,
                 nexus_quantity, sensor_power_unit_quantity, type1_sensor_quantity, type2_sensor_quantity,
                 shelf_mount_kit_quantity, rack_mount_kit_quantity, wifi_repeater_quantity, c1_harness_quantity,
                 rsm, acknowledgment, invoice_number, additional_notes
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         const params = [
-            id, timestamp, status, distributorName, installDate, neededByDate,
+            id, timestamp, status, distributorName, endUser, installDate, neededByDate,
             nexusQuantity || 0, sensorPowerUnitQuantity || 0, type1SensorQuantity || 0, type2SensorQuantity || 0,
             shelfMountKitQuantity || 0, rackMountKitQuantity || 0, wifiRepeaterQuantity || 0, c1HarnessQuantity || 0,
             rsm, acknowledgment, invoiceNumber, additionalNotes
